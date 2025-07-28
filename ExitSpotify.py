@@ -4,7 +4,7 @@ import pandas as pd
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 
-# --- Spotify Authentication via Secrets ---
+# --- Spotify Authentication via environment variables (Streamlit Secrets) ---
 client_id = os.getenv("SPOTIPY_CLIENT_ID")
 client_secret = os.getenv("SPOTIPY_CLIENT_SECRET")
 
@@ -40,7 +40,7 @@ def get_playlist_data(playlist_url):
 # --- Streamlit Page Settings ---
 st.set_page_config(page_title="ExitSpotify", page_icon="🛑", layout="centered")
 
-# --- Intro ---
+# --- Manifesto / Introduzione ---
 st.title("🛑 ExitSpotify")
 
 st.markdown("""
@@ -51,8 +51,11 @@ I hope this tool helps you migrate elsewhere.
 **Remember: if it’s easy, it’s not a protest — it’s virtue signaling.**
 """)
 
+# --- Mini tutorial ---
+st.markdown("👉 Paste the link to your **public Spotify playlist** below and click **Generate** to see the full tracklist and download it as a CSV.")
+
 # --- Input field ---
-playlist_url = st.text_input("🎧 Paste the Spotify playlist link")
+playlist_url = st.text_input("🎧 Spotify playlist link")
 
 if st.button("🎛️ Generate"):
     if playlist_url:
@@ -63,7 +66,8 @@ if st.button("🎛️ Generate"):
             st.dataframe(df, use_container_width=True)
 
             csv = df.to_csv(index=False).encode('utf-8')
-            st.download_button("⬇️ Download CSV", data=csv, file_name='playlist.csv', mime='text/csv')
+            csv_filename = f"{playlist_name.replace(' ', '_').lower()}.csv"
+            st.download_button("⬇️ Download CSV", data=csv, file_name=csv_filename, mime='text/csv')
 
         except Exception as e:
             st.error(f"Error: {e}")
@@ -76,3 +80,4 @@ st.markdown("""
 *This tool uses the [Spotify Web API](https://developer.spotify.com/documentation/web-api/) to retrieve publicly available data.  
 It is not affiliated, endorsed, or certified by Spotify AB. All names, logos, and trademarks are the property of their respective owners.*
 """)
+
